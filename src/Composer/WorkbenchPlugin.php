@@ -7,6 +7,7 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\ScriptEvents;
+use Symfony\Component\Filesystem\Filesystem;
 use Workbench\Path;
 
 class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
@@ -25,16 +26,28 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
     {
         $this->composer = $composer;
         $this->io = $io;
+
+        $this->createWorkbenchConfig();
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::PRE_AUTOLOAD_DUMP => 'registerWorkbenchPackages',
+            ScriptEvents::PRE_AUTOLOAD_DUMP => 'registerPackages',
         ];
     }
 
-    public function registerWorkbenchPackages()
+    protected function createWorkbenchConfig()
+    {
+        if (!file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
+            $filesystem = new Filesystem();
+            $filesystem->dumpFile($workbenchConfigPath, json_encode([
+                'paths' => []
+            ], JSON_PRETTY_PRINT));
+        }
+    }
+
+    public function registerPackages()
     {
         if (file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
             $installedPackages = $this->installedPackages();
@@ -52,6 +65,11 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
                 }
             }
         }
+    }
+
+    protected function getPackages()
+    {
+
     }
 
     protected function installedPackages()

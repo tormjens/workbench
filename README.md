@@ -2,6 +2,8 @@
 
 A workbench for Composer that allows you to symlink your "offline" packages without writing them to the `composer.lock` file.
 
+__!!Please note!!__ This package has only been tested on OS X. It should work fine for Linux, but probably not for Windows.
+
 ## Installation
 
 Workbench is a plugin for Composer and installs like so:
@@ -10,13 +12,12 @@ Workbench is a plugin for Composer and installs like so:
 
 ## Usage
 
-Once installed you'll have to create a `workbench.json` file in your root composer directory. On a mac that's usually `/Users/username/.composer`. 
+Once installed you'll notice a `workbench.json` file in your root composer directory (create it if you can't find it). On a mac that's usually `/Users/username/.composer`. 
 
 The file should look like this:
 ```json
 {
-  "paths": [
-  ]
+  "paths": []
 }
 ```
 
