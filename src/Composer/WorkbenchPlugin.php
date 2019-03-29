@@ -30,18 +30,15 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::POST_INSTALL_CMD => 'registerWorkbenchPackages',
-            ScriptEvents::POST_UPDATE_CMD => 'registerWorkbenchPackages',
+            ScriptEvents::PRE_AUTOLOAD_DUMP => 'registerWorkbenchPackages',
         ];
     }
 
     public function registerWorkbenchPackages()
     {
         if (file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
-            $installedPackages = array_keys($this->composer->getPackage()->getRequires());
+            $installedPackages = $this->installedPackages();
             $json = json_decode(file_get_contents($workbenchConfigPath));
-
-            $paths = [];
             if (isset($json->paths)) {
                 foreach ($json->paths as $path) {
                     $path = new Path($path, $this->io);
@@ -55,6 +52,18 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
                 }
             }
         }
+    }
+
+    protected function installedPackages()
+    {
+        $packages = [];
+
+        foreach (glob($this->composer->getConfig()->get('vendor-dir') . '/**/*/composer.json') as $package) {
+            $json = json_decode(file_get_contents($package));
+            $packages[] = $json->name;
+        }
+
+        return $packages;
     }
 
 }

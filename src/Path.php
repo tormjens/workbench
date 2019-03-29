@@ -45,9 +45,7 @@ class Path
 
     public function hasOneOf(array $packages)
     {
-        $foundPackages = array_intersect($packages, array_map(function ($package) {
-            return $package->name;
-        }, $this->packages));
+        $foundPackages = array_intersect($packages, array_keys($this->packages));
 
         if ($foundPackages) {
             return array_map(function ($package) {

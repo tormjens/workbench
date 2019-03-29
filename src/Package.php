@@ -42,7 +42,7 @@ class Package
         if (file_exists($targetDir = $vendorDir . '/' . $this->name)) {
             $sourceDir = $this->getDirectory();
 
-            $this->io->writeError(sprintf('[WORKBENCH] Symlinking "%s" to "%s".', $this->name, $sourceDir), false);
+            $this->io->writeError(sprintf("\n" . '[WORKBENCH] Symlinking "%s" to "%s".' . "\n", $this->name, $sourceDir), false);
 
             $fileSystem->remove($targetDir);
             $fileSystem->symlink($sourceDir, $targetDir);
