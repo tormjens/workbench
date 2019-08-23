@@ -56,7 +56,6 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
 
     public function registerPackages()
     {
-        var_dump($this->enabled);
         if (!$this->enabled) {
             return;
         }
