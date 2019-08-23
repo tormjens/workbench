@@ -22,12 +22,19 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $io;
 
+    /**
+     * @var boolean
+     */
+    protected $enabled;
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
         $this->io = $io;
 
         $this->createWorkbenchConfig();
+
+        $this->enable = (bool)getenv('WORKBENCH', 1);
     }
 
     public static function getSubscribedEvents()
@@ -49,6 +56,9 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
 
     public function registerPackages()
     {
+        if (!$this->enabled) {
+            return;
+        }
         if (file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
             $installedPackages = $this->installedPackages();
             $json = json_decode(file_get_contents($workbenchConfigPath));

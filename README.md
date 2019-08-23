@@ -41,3 +41,10 @@ So your `workbench.json` would look like:
 }
 ```
 
+### Run Composer without Workbench
+
+Some times, for various reasons, you may want to run `composer install` and other commands without triggering workbench. 
+In that case you may prefix the command with `WORKBENCH=0`. This will deactivate Workbench for that run.
+
+`WORKBENCH=0 composer install`
+
