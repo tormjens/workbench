@@ -32,9 +32,9 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
         $this->composer = $composer;
         $this->io = $io;
 
-        $this->createWorkbenchConfig();
+        $this->enabled = getenv('WORKBENCH') === '0' ? false : true;
 
-        $this->enable = (bool)getenv('WORKBENCH', 1);
+        $this->createWorkbenchConfig();
     }
 
     public static function getSubscribedEvents()
@@ -56,6 +56,7 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
 
     public function registerPackages()
     {
+        var_dump($this->enabled);
         if (!$this->enabled) {
             return;
         }
