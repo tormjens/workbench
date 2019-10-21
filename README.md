@@ -48,3 +48,9 @@ In that case you may prefix the command with `WORKBENCH=0`. This will deactivate
 
 `WORKBENCH=0 composer install`
 
+
+## Caveats
+
+While Workbench solves the issue of your custom local packages not being written to your project's `.lock` file, it will
+not be able to detect local changes to your `composer.json` during install. Hence you'll need to push and update for every
+of those changes.
