@@ -27,6 +27,16 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected $enabled;
 
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+        // TODO: Implement deactivate() method.
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+        // TODO: Implement uninstall() method.
+    }
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -93,5 +103,4 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
 
         return $packages;
     }
-
 }
