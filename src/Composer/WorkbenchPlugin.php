@@ -100,7 +100,7 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
         }
 
         foreach ($json->sources as $source) {
-            $source = new Path($source, $this->io);
+            $sourcePath = new Path($source, $this->io);
 
             /*if (!$packages = $source->hasOneOf($installedPackages)) {
                 return;
@@ -108,8 +108,9 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
 
             $packages = [];
 
+
             foreach ($installedPackages as $installedPackage) {
-                if (fnmatch($source->getPath(), $installedPackage->name)) {
+                if (fnmatch($source, $installedPackage)) {
                     $packages[] = $installedPackage;
                 }
             }
