@@ -76,10 +76,15 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        $json = json_decode(file_get_contents($workbenchConfigPath));
+        $configFile = json_decode(file_get_contents($workbenchConfigPath));
+
+        // If there are config-entries in 'paths', warn user to update their config file
+        if (isset($configFile->paths) && count($configFile->paths)) {
+            $this->io->warning('Please update your workbench.json-file to support the latest Workbench-version');
+        }
 
         // We must have both sources and targets config options
-        if (!isset($json->sources) || !isset($json->targets)) {
+        if (!isset($configFile->sources) || !isset($configFile->targets)) {
             return;
         }
 
@@ -87,7 +92,7 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
         $currentDirectory = getcwd();
         $isEnabled = false;
 
-        foreach ($json->targets as $target) {
+        foreach ($configFile->targets as $target) {
             // Check if the current path is part of the target directories
             if (fnmatch($target, $currentDirectory)) {
                 $isEnabled = true;
@@ -99,23 +104,10 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        foreach ($json->sources as $source) {
+        foreach ($configFile->sources as $source) {
             $sourcePath = new Path($source, $this->io);
 
-            /*if (!$packages = $source->hasOneOf($installedPackages)) {
-                return;
-            }*/
-
-            $packages = [];
-
-
-            foreach ($installedPackages as $installedPackage) {
-                if (fnmatch($source, $installedPackage)) {
-                    $packages[] = $installedPackage;
-                }
-            }
-
-            if (!$packages) {
+            if (!$packages = $sourcePath->hasOneOf($installedPackages)) {
                 return;
             }
 
