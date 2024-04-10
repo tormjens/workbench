@@ -17,11 +17,13 @@ Once installed you'll notice a `workbench.json` file in your root composer direc
 The file should look like this:
 ```json
 {
-  "paths": []
+    "sources": [],
+    "targets": []
 }
 ```
 
-Inside the `paths` key you'll place the absolute paths to where your local packages are located. It will search using a glob so if you have many packages you may specify the "top level".
+Inside the `sources` key, you'll place the absolute paths to where your local packages are located. It will search using 
+a glob so if you have many packages you may specify the "top level".
 
 For example if you have packages at
 
@@ -31,13 +33,23 @@ For example if you have packages at
 
 You would then only add the path `/Users/username/packages` and all of your packages would be found.
 
-So your `workbench.json` would look like:
+Inside the `targets` key, you'll place the absolute paths to where this plugin should be enabled. This will also search 
+using a glob. A few examples:
+
+* `/Users/username/*` Plugin is enabled for all paths inside your home folder
+* `*` Plugin is enabled everywhere
+* `/Users/username/webapps/awesomeapp` Plugin is constrained to just the awesomeapp folder
+
+So your `workbench.json` could look like:
 
 ```json
 {
-  "paths": [
-    "/Users/username/packages"
-  ]
+    "sources": [
+        "/Users/username/packages"
+    ],
+    "targets": [
+        "/Users/username/webapps"
+    ]
 }
 ```
 

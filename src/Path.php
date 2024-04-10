@@ -34,12 +34,15 @@ class Path
     {
         $composerConfigs = glob($this->directory . '/**/*composer.json');
 
-        if ($composerConfigs) {
-            foreach ($composerConfigs as $configFile) {
-                $json = file_get_contents($configFile);
-                $package = JsonFile::parseJson($json, $configFile);
-                $this->packages[$package['name']] = new Package($package, $configFile, $this->io);
-            }
+        if (!$composerConfigs) {
+            return;
+        }
+
+        foreach ($composerConfigs as $configFile) {
+            $json = file_get_contents($configFile);
+            $package = JsonFile::parseJson($json, $configFile);
+
+            $this->packages[$package['name']] = new Package($package, $configFile, $this->io);
         }
     }
 
@@ -47,12 +50,12 @@ class Path
     {
         $foundPackages = array_intersect($packages, array_keys($this->packages));
 
-        if ($foundPackages) {
-            return array_map(function ($package) {
-                return $this->packages[$package];
-            }, $foundPackages);
+        if (!$foundPackages) {
+            return false;
         }
 
-        return false;
+        return array_map(function ($package) {
+            return $this->packages[$package];
+        }, $foundPackages);
     }
 }
