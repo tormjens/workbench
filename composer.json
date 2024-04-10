@@ -1,28 +1,28 @@
 {
-  "name": "tormjens/workbench",
-  "description": "Simple local Composer development that does not mess up your lock file.",
-  "keywords": [
-    "composer",
-    "development",
-    "workflow"
-  ],
-  "type": "composer-plugin",
-  "license": "MIT",
-  "autoload": {
-    "psr-4": {
-      "Workbench\\": "src"
+    "name": "tormjens/workbench",
+    "description": "Simple local Composer development that does not mess up your lock file.",
+    "keywords": [
+        "composer",
+        "development",
+        "workflow"
+    ],
+    "type": "composer-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Workbench\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=7.0",
+        "composer-plugin-api": "^1.0 || ^2.0",
+        "symfony/filesystem": "^2.5 || ^3.0 || ^4.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0.0",
+        "phpspec/phpspec": "~2.3"
+    },
+    "extra": {
+        "class": "Workbench\\Composer\\WorkbenchPlugin"
     }
-  },
-  "require": {
-    "php": ">=7.0",
-    "composer-plugin-api": "^1.0 || ^2.0",
-    "symfony/filesystem": "^2.5 || ^3.0 || ^4.0"
-  },
-  "require-dev": {
-    "composer/composer": "dev-master",
-    "phpspec/phpspec": "~2.3"
-  },
-  "extra": {
-    "class": "Workbench\\Composer\\WorkbenchPlugin"
-  }
 }

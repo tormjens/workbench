@@ -42,7 +42,7 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
         $this->composer = $composer;
         $this->io = $io;
 
-        $this->enabled = getenv('WORKBENCH') === '0' ? false : true;
+        $this->enabled = !(getenv('WORKBENCH') === '0');
 
         $this->createWorkbenchConfig();
     }
@@ -58,8 +58,10 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
     {
         if (!file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
             $filesystem = new Filesystem();
+
             $filesystem->dumpFile($workbenchConfigPath, json_encode([
-                'paths' => []
+                'targets' => [],
+                'sources' => [],
             ], JSON_PRETTY_PRINT));
         }
     }
@@ -69,20 +71,52 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
         if (!$this->enabled) {
             return;
         }
-        if (file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
-            $installedPackages = $this->installedPackages();
-            $json = json_decode(file_get_contents($workbenchConfigPath));
-            if (isset($json->paths)) {
-                foreach ($json->paths as $path) {
-                    $path = new Path($path, $this->io);
 
-                    if ($packages = $path->hasOneOf($installedPackages)) {
-                        foreach ($packages as $package) {
-                            unset($installedPackages[$package->name]);
-                            $package->link($this->composer->getConfig()->get('vendor-dir'));
-                        }
-                    }
-                }
+        if (!file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
+            return;
+        }
+
+        $configFile = json_decode(file_get_contents($workbenchConfigPath));
+
+        // If there are config-entries in 'paths', warn user to update their config file
+        if (isset($configFile->paths) && count($configFile->paths)) {
+            $this->io->warning('Please update your workbench.json-file to support the latest Workbench-version');
+        }
+
+        // We must have both sources and targets config options
+        if (!isset($configFile->sources) || !isset($configFile->targets)) {
+            return;
+        }
+
+        $installedPackages = $this->installedPackages();
+        $currentDirectory = getcwd();
+        $isEnabled = false;
+
+        foreach ($configFile->targets as $target) {
+            // Check if the current path is part of the target directories
+            if (fnmatch($target, $currentDirectory)) {
+                $isEnabled = true;
+                break;
+            }
+        }
+
+        if (!$isEnabled) {
+            return;
+        }
+
+        foreach ($configFile->sources as $source) {
+            $sourcePath = new Path($source, $this->io);
+
+            if (!$packages = $sourcePath->hasOneOf($installedPackages)) {
+                return;
+            }
+
+            foreach ($packages as $package) {
+                unset($installedPackages[$package->name]);
+
+                $package->link(
+                    $this->composer->getConfig()->get('vendor-dir')
+                );
             }
         }
     }
@@ -95,8 +129,9 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
     protected function installedPackages()
     {
         $packages = [];
+        $vendorDir = $this->composer->getConfig()->get('vendor-dir');
 
-        foreach (glob($this->composer->getConfig()->get('vendor-dir') . '/**/*/composer.json') as $package) {
+        foreach (glob($vendorDir . '/**/*/composer.json') as $package) {
             $json = json_decode(file_get_contents($package));
             $packages[] = $json->name;
         }
