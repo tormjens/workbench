@@ -37,6 +37,11 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
         // TODO: Implement uninstall() method.
     }
 
+    public function getHome() 
+    {
+        return $_SERVER['HOME'] ?? (/*windows compatibility: */$_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH']);
+    }
+
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -56,7 +61,7 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
 
     protected function createWorkbenchConfig()
     {
-        if (!file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
+        if (!file_exists($workbenchConfigPath = $this->getHome() . '/.composer/workbench.json')) {
             $filesystem = new Filesystem();
 
             $filesystem->dumpFile($workbenchConfigPath, json_encode([
@@ -72,7 +77,7 @@ class WorkbenchPlugin implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        if (!file_exists($workbenchConfigPath = $_SERVER['HOME'] . '/.composer/workbench.json')) {
+        if (!file_exists($workbenchConfigPath = $this->getHome() . '/.composer/workbench.json')) {
             return;
         }
 
